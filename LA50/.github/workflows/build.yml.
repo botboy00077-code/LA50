@@ -1,4 +1,4 @@
- name: Build macOS installe
+name: Build macOS installer
 on:
   workflow_dispatch:
   push:

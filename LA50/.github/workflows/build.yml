@@ -1,0 +1,17 @@
+name: Build macOS installer
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and package
+        run: build_installer.sh
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: LA-50-Installer
+          path: LA-50-Installer.pkg

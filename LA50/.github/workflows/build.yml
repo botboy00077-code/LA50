@@ -9,9 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build and package
-        run: build_installer.sh
+        run: bash LA50/build_installer.sh
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
           name: LA-50-Installer
-          path: LA-50-Installer.pkg
+          path: LA50/LA-50-Installer.pkg

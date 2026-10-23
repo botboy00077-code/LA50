@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build and package
-        run: build_installer.sh
+        run: bash build_installer.sh
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:

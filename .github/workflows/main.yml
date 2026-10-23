@@ -1,0 +1,32 @@
+name: Build macOS installer
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show files
+        run: find . -not -path './.git/*' | head -80
+      - name: Build installer
+        run: |
+          DIR=$(dirname "$(find . -name CMakeLists.txt | head -1)")
+          echo "Project folder: $DIR"
+          cd "$DIR"
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j 4
+          AU=$(find build -name "LA-50.component" -type d | head -1)
+          VST=$(find build -name "LA-50.vst3" -type d | head -1)
+          mkdir -p stage/Library/Audio/Plug-Ins/Components stage/Library/Audio/Plug-Ins/VST3
+          cp -R "$AU" stage/Library/Audio/Plug-Ins/Components/
+          if [ -n "$VST" ]; then cp -R "$VST" stage/Library/Audio/Plug-Ins/VST3/; fi
+          codesign --force --deep -s - stage/Library/Audio/Plug-Ins/Components/LA-50.component
+          pkgbuild --root stage --identifier com.la50audio.la50.pkg --version 1.0.0 --install-location / LA-50-Installer.pkg
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          cp LA-50-Installer.pkg "$GITHUB_WORKSPACE/out/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LA-50-Installer
+          path: out/LA-50-Installer.pkg

@@ -15,10 +15,11 @@ jobs:
           DIR=$(dirname "$(find . -name CMakeLists.txt | head -1)")
           echo "Project folder: $DIR"
           cd "$DIR"
-          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
           cmake --build build --config Release -j 4
           AU=$(find build -name "LA-50.component" -type d | head -1)
           VST=$(find build -name "LA-50.vst3" -type d | head -1)
+          lipo -archs "$AU/Contents/MacOS/LA-50"
           mkdir -p stage/Library/Audio/Plug-Ins/Components stage/Library/Audio/Plug-Ins/VST3
           cp -R "$AU" stage/Library/Audio/Plug-Ins/Components/
           if [ -n "$VST" ]; then cp -R "$VST" stage/Library/Audio/Plug-Ins/VST3/; fi
